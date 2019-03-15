@@ -1,0 +1,7 @@
+export const authActionsConstants = {
+  AUTH_REQUEST: "AUTH_REQUEST",
+  AUTH_SUCCESS: "AUTH_SUCCESS",
+  AUTH_FAILURE: "AUTH_FAILURE",
+
+  USER_LOGOUT: "USER_LOGOUT"
+};
