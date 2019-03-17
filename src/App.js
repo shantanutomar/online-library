@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Router, Switch, Route } from "react-router-dom";
+import ProtectedRoute from "./Containers/ProtectedRoute/ProtectedRoute";
+import Homepage from "./Containers/Homepage/Homepage";
+import { history } from "./Helpers/history";
 
 const Onboard = React.lazy(() => import("./Containers/Onboard/Onboard"));
 class App extends Component {
@@ -8,9 +11,18 @@ class App extends Component {
     return (
       <div className="App">
         <React.Suspense fallback={<div>Page is loading...</div>}>
-          <Router>
+          <Router history={history}>
             <Switch>
-              <Route exact path="/" render={props => <Onboard {...props} />} />
+              <ProtectedRoute
+                exact
+                path="/"
+                renderFunc={routeProps => <Homepage {...routeProps} />}
+              />
+              <Route
+                exact
+                path="/login"
+                render={props => <Onboard {...props} />}
+              />
             </Switch>
           </Router>
         </React.Suspense>

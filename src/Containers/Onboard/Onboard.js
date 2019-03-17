@@ -1,5 +1,5 @@
 import React from "react";
-import { GoogleLogin, GoogleLogout } from "react-google-login";
+import { GoogleLogin } from "react-google-login";
 import GoogleLogo from "../../Assets/Images/google-logo.svg";
 import { authActions } from "../../Store/Actions/authActions";
 import { withStyles } from "@material-ui/core/styles";
@@ -20,14 +20,10 @@ class Onboard extends React.Component {
     googleResponse.expiresAt = response.Zi.expires_at;
     googleResponse.userDetails.name = response.profileObj.name;
     googleResponse.userDetails.imageUrl = response.profileObj.imageUrl;
-    console.log(googleResponse);
     this.props.onAuthSuccess(googleResponse);
   };
 
   googleAuthFailure = response => {
-    console.log(response);
-  };
-  logout = response => {
     console.log(response);
   };
 
@@ -46,12 +42,6 @@ class Onboard extends React.Component {
             <img src={GoogleLogo} alt="GoogleLogo" />
           </section>
         </GoogleLogin>
-        <GoogleLogout
-          clientId="1050022347099-jpa77cn3uafbqsnh79n9ktlnjh22ra40.apps.googleusercontent.com"
-          buttonText="Logout"
-          onSuccess={this.logout}
-          onFailure={this.logout}
-        />
       </div>
     );
   }

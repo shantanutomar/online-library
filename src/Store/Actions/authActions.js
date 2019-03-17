@@ -3,8 +3,8 @@ import { history } from "../../Helpers/history";
 
 const logout = () => {
   return dispatch => {
-    // localStorage.removeItem("user");
     dispatch(logout());
+    history.push("/login");
   };
   function logout() {
     return { type: authActionsConstants.USER_LOGOUT };
