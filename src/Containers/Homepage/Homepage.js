@@ -15,6 +15,9 @@ const styles = theme => ({
   root: {
     padding: theme.spacing.unit * 5,
     margin: "0 auto"
+  },
+  homepageText: {
+    fontFamily: "UbuntuRegular"
   }
 });
 
@@ -116,7 +119,7 @@ class Homepage extends React.Component {
 
   render() {
     let res = null;
-    // 1903773172
+    const { classes } = this.props;
     if (this.state.isLoadingTasks) {
       return <p>Loading Books</p>;
     }
@@ -158,8 +161,8 @@ class Homepage extends React.Component {
     }
 
     return (
-      <div>
-        <span>This is homepage</span>
+      <div className={classes.root}>
+        <span className={classes.homepageText}>This is homepage</span>
         <GoogleLogout
           clientId="1050022347099-jpa77cn3uafbqsnh79n9ktlnjh22ra40.apps.googleusercontent.com"
           buttonText="Logout"
