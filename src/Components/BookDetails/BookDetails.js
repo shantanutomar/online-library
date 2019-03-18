@@ -5,63 +5,129 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { withStyles } from "@material-ui/core/styles";
+import Slide from "@material-ui/core/Slide";
 
+// Component shows details for each book
+
+const Transition = props => {
+  return <Slide direction="up" {...props} />;
+};
 const styles = theme => ({
   paper: {
-    marginBottom: theme.spacing.unit * 2,
-    padding: theme.spacing.unit * 2,
-    overflowWrap: "break-word"
+    margin: 15,
+    padding: theme.spacing.unit + 2,
+    overflowWrap: "break-word",
+    borderRadius: 20
+  },
+  titleImgBox: {
+    display: "flex",
+    alignItems: "center"
+  },
+  dialogTitle: {
+    fontFamily: "UbuntuBold",
+    color: theme.palette.primary.main
+  },
+  coverImage: {
+    marginRight: 20
+  },
+  valueText: {
+    color: theme.palette.primary.main,
+    fontFamily: "UbuntuMedium",
+    fontSize: 14
+  },
+  closeButton: {
+    fontFamily: "UbuntuBold",
+    color: theme.palette.primary.main,
+    borderRadius: 18
   }
 });
 const BookDetails = props => {
+  const { classes } = props;
   return (
     <Dialog
       fullScreen={false}
       open={props.open}
       onClose={props.handleClose}
       aria-labelledby="responsive-dialog-title"
+      classes={{ paper: classes.paper }}
+      TransitionComponent={Transition}
     >
-      <DialogTitle id="responsive-dialog-title">
-        {props.type === "ISBN" ? (
-          <img src={props.bookData.cover.small} alt="coverImage" />
-        ) : null}
-        {props.bookData.title}
+      <DialogTitle
+        id="responsive-dialog-title"
+        className={classes.dialogTitle}
+        disableTypography={true}
+      >
+        <section className={classes.titleImgBox}>
+          {props.type === "ISBN" ? (
+            <img
+              src={props.bookData.cover.small}
+              alt="coverImage"
+              className={classes.coverImage}
+            />
+          ) : null}
+          {props.bookData.title}
+        </section>
       </DialogTitle>
       <DialogContent>
         {props.type === "NAME" ? (
           props.bookData.author_name !== undefined ? (
-            <span>Written By : {props.bookData.author_name[0]}</span>
+            <span className={classes.valueText}>
+              Written By : {props.bookData.author_name[0]}
+            </span>
           ) : null
         ) : props.bookData.authors !== undefined ? (
-          <span>Written By : {props.bookData.authors[0].name}</span>
+          <span className={classes.valueText}>
+            Written By : {props.bookData.authors[0].name}
+          </span>
         ) : null}
         <br />
         {/* Published On */}
         {props.type === "NAME" ? (
           props.bookData.first_publish_year !== undefined ? (
-            <span>Published On : {props.bookData.first_publish_year}</span>
+            <span className={classes.valueText}>
+              Published In : {props.bookData.first_publish_year}
+            </span>
           ) : null
         ) : props.bookData.publish_date !== undefined ? (
-          <span>Published On : {props.bookData.publish_date}</span>
+          <span className={classes.valueText}>
+            Published In : {props.bookData.publish_date}
+          </span>
         ) : null}
         <br />
         {/* Publisher */}
-        {props.type === "NAME"
-          ? props.bookData.publisher !== undefined
-            ? props.bookData.publisher.map((ele, index) => {
-                return <span key={index}>{ele}</span>;
-              })
-            : null
-          : props.bookData.publishers !== undefined
-          ? props.bookData.publishers.map((ele, index) => {
-              return <span key={index}>{ele.name}</span>;
-            })
-          : null}
-        <br />
+        {props.type === "NAME" ? (
+          props.bookData.publisher !== undefined ? (
+            <section className={classes.valueText}>
+              <span>Published by : </span>
+              {props.bookData.publisher.map((ele, index) => {
+                return (
+                  <span key={index}>
+                    {ele}
+                    {props.bookData.publisher.length - 1 === index ? "." : ", "}
+                  </span>
+                );
+              })}
+            </section>
+          ) : null
+        ) : props.bookData.publishers !== undefined ? (
+          <section className={classes.valueText}>
+            <span>Published by : </span>
+            {props.bookData.publishers.map((ele, index) => {
+              return (
+                <span key={index}>
+                  {ele.name}
+                  {props.bookData.publishers.length - 1 === index ? "." : ", "}
+                </span>
+              );
+            })}
+          </section>
+        ) : null}
         {/* Edition OR URL */}
         {props.type === "NAME" ? (
           props.bookData.edition_count !== undefined ? (
-            <span>Total Editions are : {props.bookData.edition_count}</span>
+            <span className={classes.valueText}>
+              Total Editions : {props.bookData.edition_count}
+            </span>
           ) : null
         ) : props.bookData.url !== undefined ? (
           <span>
@@ -69,6 +135,7 @@ const BookDetails = props => {
               href={props.bookData.url}
               target="_blank"
               rel="noopener noreferrer"
+              className={classes.valueText}
             >
               More Details
             </a>
@@ -76,7 +143,13 @@ const BookDetails = props => {
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose} color="primary" autoFocus>
+        <Button
+          onClick={props.handleClose}
+          color="primary"
+          autoFocus
+          className={classes.closeButton}
+          variant="outlined"
+        >
           Close
         </Button>
       </DialogActions>

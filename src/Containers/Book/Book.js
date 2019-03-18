@@ -4,12 +4,18 @@ import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import BookDetails from "../../Components/BookDetails/BookDetails";
+import InfoIcon from "@material-ui/icons/Info";
 
-const styles = {
+// Card Component showing each Book basic info
+const styles = theme => ({
   card: {
-    minWidth: 275
+    minWidth: 275,
+    borderRadius: 20,
+    display: "flex",
+    justifyContent: "space-between",
+    margin: "10px 0px"
   },
   bullet: {
     display: "inline-block",
@@ -21,8 +27,30 @@ const styles = {
   },
   pos: {
     marginBottom: 12
+  },
+  button: {
+    margin: theme.spacing.unit
+  },
+  input: {
+    display: "none"
+  },
+  cardContentRoot: {
+    display: "flex",
+    flexDirection: "column",
+    textAlign: "left"
+  },
+  cardActionsRoot: {
+    padding: 0
+  },
+  titleText: {
+    color: theme.palette.primary.main,
+    fontFamily: "UbuntuBold"
+  },
+  authorText: {
+    color: theme.palette.primary.main,
+    fontFamily: "UbuntuRegular"
   }
-};
+});
 
 class Book extends React.Component {
   state = {
@@ -40,22 +68,28 @@ class Book extends React.Component {
     return (
       <div>
         <Card className={classes.card}>
-          <CardContent>
-            <span>{this.props.bookData.title}</span>
-            <span>
+          <CardContent className={classes.cardContentRoot}>
+            <span className={classes.titleText}>
+              {this.props.bookData.title}
+            </span>
+            <span className={classes.authorText}>
               {this.props.type === "NAME" ? (
                 this.props.bookData.author_name !== undefined ? (
-                  <p>{this.props.bookData.author_name[0]}</p>
+                  <span>Author : {this.props.bookData.author_name[0]}</span>
                 ) : null
               ) : this.props.bookData.authors !== undefined ? (
-                <p>{this.props.bookData.authors[0].name}</p>
+                <span>Author : {this.props.bookData.authors[0].name}</span>
               ) : null}
             </span>
           </CardContent>
-          <CardActions>
-            <Button size="small" onClick={this.handleClickOpen}>
-              Learn More
-            </Button>
+          <CardActions className={classes.cardActionsRoot}>
+            <IconButton
+              className={classes.button}
+              aria-label="Delete"
+              onClick={this.handleClickOpen}
+            >
+              <InfoIcon />
+            </IconButton>
           </CardActions>
         </Card>
         <BookDetails

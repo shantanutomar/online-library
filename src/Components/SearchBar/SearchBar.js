@@ -6,12 +6,16 @@ import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 
+// Component containing searchbar
 const styles = {
   root: {
     padding: "2px 4px",
     display: "flex",
     alignItems: "center",
-    width: 400
+    width: 400,
+    borderRadius: 25,
+    height: 70,
+    marginTop: 20
   },
   input: {
     marginLeft: 8,
@@ -19,6 +23,11 @@ const styles = {
   },
   iconButton: {
     padding: 10
+  },
+  "@media (min-width: 320px) and (max-width: 480px)": {
+    root: {
+      width: 305
+    }
   }
 };
 
@@ -29,12 +38,12 @@ const SearchBar = props => {
     <Paper className={classes.root} elevation={1}>
       <InputBase
         className={classes.input}
-        placeholder="Search Google Maps"
+        placeholder="Search"
         onChange={props.searchInpChange}
         value={props.searchInputText}
         autoFocus={true}
       />
-      <IconButton className={classes.iconButton} aria-label="Search">
+      <IconButton className={classes.iconButton} aria-label="Search" disabled>
         <SearchIcon />
       </IconButton>
     </Paper>

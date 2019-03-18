@@ -7,7 +7,9 @@ const initialState = {
     name: "",
     imageUrl: ""
   },
-  expiresAt: 0
+  expiresAt: 0,
+  showMessage: false,
+  messageText: ""
 };
 
 export function authReducer(state = initialState, action) {
@@ -39,12 +41,28 @@ export function authReducer(state = initialState, action) {
       userDetails.name = "";
       userDetails.imageUrl = "";
       return {
+        ...state,
         userDetails: userDetails,
         loggedIn: false,
-        loggingIn: false,
-        expiresAt: 0
+        loggingIn: false
       };
-
+    case authActionsConstants.CLOSE_MESSAGE:
+      return {
+        ...state,
+        showMessage: false,
+        messageText: ""
+      };
+    case authActionsConstants.SHOW_MESSAGE:
+      let expiresAt;
+      action.messageText !== "Logged In"
+        ? (expiresAt = 0)
+        : (expiresAt = state.expiresAt);
+      return {
+        ...state,
+        showMessage: true,
+        messageText: action.messageText,
+        expiresAt: expiresAt
+      };
     default:
       return state;
   }

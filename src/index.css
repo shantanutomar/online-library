@@ -1,6 +1,6 @@
 /* ubuntu-regular */
 @font-face {
-  font-family: "Ubuntu";
+  font-family: "UbuntuRegular";
   font-style: normal;
   font-display: fallback;
   font-weight: 400;
@@ -19,7 +19,7 @@
 }
 /* ubuntu-500 - latin */
 @font-face {
-  font-family: "Ubuntu";
+  font-family: "UbuntuMedium";
   font-style: normal;
   font-display: fallback;
   font-weight: 500;
@@ -38,7 +38,7 @@
 }
 /* ubuntu-700 - latin */
 @font-face {
-  font-family: "Ubuntu";
+  font-family: "UbuntuBold";
   font-style: normal;
   font-display: fallback;
   font-weight: 700;

@@ -6,15 +6,32 @@ import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 
+// Component containing Radio Buttons
+
 const styles = theme => ({
   root: {
-    display: "flex"
+    display: "flex",
+    width: "90%"
   },
   formControl: {
-    margin: theme.spacing.unit * 3
+    margin: theme.spacing.unit * 3,
+    position: "inherit"
   },
   group: {
-    margin: `${theme.spacing.unit}px 0`
+    margin: `${theme.spacing.unit}px 0`,
+    flexDirection: "row"
+  },
+  formLabel: {
+    color: "white !important",
+    textAlign: "left",
+    fontFamily: "UbuntuMedium"
+  },
+  radioLabel: {
+    color: "white",
+    fontFamily: "UbuntuRegular"
+  },
+  radioRoot: {
+    color: "white"
   }
 });
 
@@ -23,7 +40,9 @@ const SelectionOptions = props => {
   return (
     <div className={classes.root}>
       <FormControl component="fieldset" className={classes.formControl}>
-        <FormLabel component="legend">Search By</FormLabel>
+        <FormLabel component="legend" className={classes.formLabel}>
+          Search By
+        </FormLabel>
         <RadioGroup
           aria-label="SearchBy"
           name="searchby"
@@ -31,11 +50,17 @@ const SelectionOptions = props => {
           value={props.value}
           onChange={props.handleSelectionChange}
         >
-          <FormControlLabel value="ISBN" control={<Radio />} label="ISBN" />
+          <FormControlLabel
+            value="ISBN"
+            control={<Radio className={classes.radioRoot} />}
+            label="ISBN"
+            classes={{ label: classes.radioLabel }}
+          />
           <FormControlLabel
             value="NAME"
-            control={<Radio />}
+            control={<Radio className={classes.radioRoot} />}
             label="Name of the Book"
+            classes={{ label: classes.radioLabel }}
           />
         </RadioGroup>
       </FormControl>

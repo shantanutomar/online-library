@@ -10,14 +10,62 @@ import { API_PATH } from "../../api";
 import SelectionOptions from "../../Components/SelectionOptions/SelectionOptions";
 import arrayToObjectKeyByID from "../../Helpers/arrayToObjectKeyByID";
 import Book from "../Book/Book";
+import Avatar from "@material-ui/core/Avatar";
+import Loader from "../../Components/Loader/Loader";
+import MetaTags from "react-meta-tags";
 
+// Homepage where user lands when logged in
 const styles = theme => ({
   root: {
-    padding: theme.spacing.unit * 5,
-    margin: "0 auto"
+    backgroundColor: theme.palette.primary.main,
+    width: "100%",
+    height: "inherit",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    "& button": {
+      borderRadius: "25px !important",
+      width: 100
+    },
+    "& button span": {
+      margin: "auto"
+    }
   },
   homepageText: {
-    fontFamily: "UbuntuRegular"
+    color: "white",
+    fontFamily: "UbuntuMedium",
+    textTransform: "capitalize",
+    fontWeight: 600
+  },
+  logoButtonBox: {
+    display: "flex",
+    width: "90%",
+    justifyContent: "space-between",
+    marginTop: 20,
+    height: 55
+  },
+  googleLogoutButton: {
+    color: theme.palette.primary.main,
+    fontFamily: "UbuntuMedium",
+    fontSize: 13,
+    margin: "auto"
+  },
+  avatar: {
+    margin: "0px 10px"
+  },
+  logoNameBox: {
+    display: "flex",
+    alignItems: "center"
+  },
+  booksBox: {
+    width: "95%",
+    marginTop: 20,
+    overflowY: "auto",
+    height: "inherit"
+  },
+  noResultText: {
+    fontFamily: "UbuntuMedium",
+    color: "white"
   }
 });
 
@@ -25,7 +73,7 @@ class Homepage extends React.Component {
   state = {
     timeoutId: null,
     searchInputText: "",
-    isSearchingTasks: false,
+    isSearchingBooks: false,
     isLoadingBooks: false,
     searchedBooksByName: [],
     searchedBooksByISBN: {},
@@ -53,7 +101,7 @@ class Homepage extends React.Component {
 
   searchBooks = (type, searchUrl) => {
     this.setState({
-      isLoadingTasks: true
+      isLoadingBooks: true
     });
     customAxios
       .get(searchUrl)
@@ -62,32 +110,38 @@ class Homepage extends React.Component {
           let searchedBooksByName = this.modifyDataByType(type, response);
           this.setState({
             searchedBooksByName: searchedBooksByName,
-            isLoadingTasks: false
+            isLoadingBooks: false
           });
         } else {
           let searchedBooksByISBN = this.modifyDataByType(type, response);
           this.setState({
             searchedBooksByISBN: searchedBooksByISBN,
-            isLoadingTasks: false
+            isLoadingBooks: false
           });
         }
       })
       .catch(error => {
         this.setState({
-          isLoadingTasks: false,
+          isLoadingBooks: false,
           searchedBooksByName: [],
           searchedBooksByISBN: {}
         });
       });
   };
   searchInpChange = event => {
-    this.setState({
-      isSearchingTasks: true
-    });
+    const newValue = event.target.value;
+    newValue !== ""
+      ? this.setState({
+          isSearchingBooks: true
+        })
+      : this.setState({
+          isSearchingBooks: false
+        });
+
     if (this.state.timeoutId) {
       clearTimeout(this.state.timeoutId);
     }
-    const newValue = event.target.value;
+
     const latestTimeoutId = setTimeout(() => {
       let searchString = "",
         searchUrl = "";
@@ -95,7 +149,6 @@ class Homepage extends React.Component {
         searchString = this.state.searchInputText.trim().replace(/\s/g, "+");
         searchUrl = `${API_PATH.BASE_URL}/search.json?q=${searchString}`;
       } else {
-        // 1903773172
         searchString = this.state.searchInputText.trim();
         searchUrl = `${
           API_PATH.BASE_URL
@@ -113,74 +166,105 @@ class Homepage extends React.Component {
       searchBy: event.target.value,
       searchedBooksByName: [],
       searchedBooksByISBN: {},
-      searchInputText: ""
+      searchInputText: "",
+      isLoadingBooks: false,
+      isSearchingBooks: false
     });
   };
 
   render() {
     let res = null;
     const { classes } = this.props;
-    if (this.state.isLoadingTasks) {
-      return <p>Loading Books</p>;
-    }
-    if (this.state.searchBy === "NAME") {
-      res =
-        Object.values(this.state.searchedBooksByName).length > 0 ? (
-          Object.values(this.state.searchedBooksByName).map((ele, index) => {
-            return (
-              <Book
-                key={index}
-                bookData={ele}
-                type={this.state.searchBy}
-                author={
-                  ele.author_name !== undefined ? (
-                    <p>{ele.author_name[0]}</p>
-                  ) : null
-                }
-              />
-            );
-          })
-        ) : (
-          <div>No results available</div>
-        );
-    } else {
-      res =
-        Object.keys(this.state.searchedBooksByISBN).length > 0 ? (
-          <Book
-            bookData={this.state.searchedBooksByISBN}
-            type={this.state.searchBy}
-            author={
-              this.state.searchedBooksByISBN.authors !== undefined ? (
-                <p>{this.state.searchedBooksByISBN.authors[0].name}</p>
-              ) : null
-            }
-          />
-        ) : (
-          <div>No results available</div>
-        );
+    if (this.state.isSearchingBooks) {
+      if (this.state.isLoadingBooks) {
+        res = <Loader />;
+      } else if (this.state.searchBy === "NAME") {
+        res =
+          Object.values(this.state.searchedBooksByName).length > 0 ? (
+            Object.values(this.state.searchedBooksByName).map((ele, index) => {
+              return (
+                <Book
+                  key={index}
+                  bookData={ele}
+                  type={this.state.searchBy}
+                  author={
+                    ele.author_name !== undefined ? (
+                      <p>{ele.author_name[0]}</p>
+                    ) : null
+                  }
+                />
+              );
+            })
+          ) : (
+            <span className={classes.noResultText}>No results available</span>
+          );
+      } else if (this.state.searchBy === "ISBN") {
+        res =
+          Object.keys(this.state.searchedBooksByISBN).length > 0 ? (
+            <Book
+              bookData={this.state.searchedBooksByISBN}
+              type={this.state.searchBy}
+              author={
+                this.state.searchedBooksByISBN.authors !== undefined ? (
+                  <p>{this.state.searchedBooksByISBN.authors[0].name}</p>
+                ) : null
+              }
+            />
+          ) : (
+            <span className={classes.noResultText}>No results available</span>
+          );
+      }
     }
 
     return (
       <div className={classes.root}>
-        <span className={classes.homepageText}>This is homepage</span>
-        <GoogleLogout
-          clientId="1050022347099-jpa77cn3uafbqsnh79n9ktlnjh22ra40.apps.googleusercontent.com"
-          buttonText="Logout"
-          onLogoutSuccess={this.logout}
+        <MetaTags>
+          <title>Welcome</title>
+          <meta
+            name="Description"
+            content="Epaylater Online library Homepage"
+          />
+        </MetaTags>
+        <section className={classes.logoButtonBox}>
+          <section className={classes.logoNameBox}>
+            <Avatar
+              alt="googleImage"
+              src={this.props.userDetails.imageUrl}
+              className={classes.avatar}
+            >
+              Img
+            </Avatar>
+            <span className={classes.homepageText}>
+              {this.props.userDetails.name}
+            </span>
+          </section>
+          <GoogleLogout
+            clientId={API_PATH.CLIENT_ID}
+            buttonText="Logout"
+            onLogoutSuccess={this.logout}
+            icon={false}
+          >
+            <span className={classes.googleLogoutButton}>Logout</span>
+          </GoogleLogout>
+        </section>
+        <SelectionOptions
+          handleSelectionChange={this.handleSelectionChange}
+          value={this.state.searchBy}
         />
         <SearchBar
           searchInpChange={this.searchInpChange}
           searchInputText={this.state.searchInputText}
         />
-        <SelectionOptions
-          handleSelectionChange={this.handleSelectionChange}
-          value={this.state.searchBy}
-        />
-        {res}
+        <section className={classes.booksBox}>{res}</section>
       </div>
     );
   }
 }
+var mapStateToProps = state => {
+  return {
+    userDetails: state.userDetails
+  };
+};
 
 var mapDispatchToProps = dispatch => {
   return {
@@ -189,6 +273,6 @@ var mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(withTheme()(withStyles(styles)(Homepage)));

@@ -1,35 +1,32 @@
 import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { connect } from "react-redux";
+import { authActions } from "../../Store/Actions/authActions";
 
-const ProtectedRoute = ({ renderFunc, isTokenValid, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={routeProps =>
-        isTokenValid ? (
-          renderFunc(routeProps)
-        ) : (
-          <Redirect
-            to={{ pathname: "/login", state: { from: routeProps.location } }}
-          />
-        )
-      }
-    />
-  );
+// Component which will validate that user is still logged in and then only can access Homepage
+const ProtectedRoute = ({ renderFunc, isTokenValid, logout, ...rest }) => {
+  if (!isTokenValid) {
+    logout();
+    return null;
+  } else {
+    return <Route {...rest} render={routeProps => renderFunc(routeProps)} />;
+  }
 };
 var mapStateToProps = state => {
   let expiresAt = JSON.parse(state.expiresAt);
   let isTokenValid = new Date().getTime() < expiresAt;
-
   return {
-    // isloggedIn: state.isloggedIn,
-    // expiresAt: state.expiresAt,
     isTokenValid
+  };
+};
+
+var mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(authActions.logout())
   };
 };
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(ProtectedRoute);
